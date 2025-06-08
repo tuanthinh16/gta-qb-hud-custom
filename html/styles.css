@@ -1,0 +1,83 @@
+/* Reset mọi style ghi đè */
+#rpm-arc {
+  all: unset !important;
+  fill: none !important;
+  stroke: var(--stroke-color) !important;
+  stroke-width: 6px !important;
+  stroke-linecap: round !important;
+}
+
+#rpm-needle {
+  will-change: transform;
+  transform-box: fill-box;
+}
+
+/* Reset mọi style conflict */
+path#rpm-arc {
+  all: unset;
+  fill: none !important;
+  stroke-width: 6px !important;
+  stroke-linecap: round !important;
+}
+
+/* Viền neon animation */
+.gear-border {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border: 2px solid rgba(0, 255, 130, 0.5);
+  border-radius: 8px;
+  box-shadow:
+    0 0 10px rgba(0, 255, 130, 0.8),
+    inset 0 0 10px rgba(0, 255, 130, 0.5);
+  animation: pulse 2s infinite alternate;
+  z-index: -1;
+}
+
+/* Hiệu ứng nhấp nháy */
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+    box-shadow:
+      0 0 10px rgba(0, 255, 130, 0.8),
+      inset 0 0 10px rgba(0, 255, 130, 0.5);
+  }
+
+  100% {
+    opacity: 1;
+    box-shadow:
+      0 0 20px rgba(0, 255, 130, 1),
+      inset 0 0 15px rgba(0, 255, 130, 0.8);
+  }
+}
+
+/* Transition khi thay đổi số */
+.gear-change-enter-active,
+.gear-change-leave-active {
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  position: absolute;
+}
+
+.gear-change-enter-from {
+  transform: translateY(-20px) scale(1.2);
+  opacity: 0;
+}
+
+.gear-change-leave-to {
+  transform: translateY(20px) scale(0.8);
+  opacity: 0;
+}
+
+/* Style cho chữ số */
+.gear-digit {
+  text-shadow: 0 0 10px rgba(0, 255, 130, 0.8);
+  color: #00ff82;
+  min-width: 50px;
+  text-align: center;
+}
+
+.value-speed {
+  box-shadow: inset;
+}

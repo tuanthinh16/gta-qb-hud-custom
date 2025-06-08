@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speedometer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body class="bg-black min-h-screen flex flex-col items-center justify-end">
+
+    <div
+        class="relative w-[650px] text-white h-[300px] rounded-t-[2rem] bg-gradient-to-b from-[#232323] to-black overflow-hidden shadow-2xl border-[10px] border-[#1a1a1a] flex items-center justify-center">
+        <div class="absolute top-3 right-2">
+            <div class="relative">
+                <svg width="200" height="200" viewBox="0 0 400 400" class="relative">
+                    <!-- Track nền -->
+                    <path d="M120,250 A160,160 0 1,1 370,250" fill="none" stroke="#222" stroke-width="24"
+                        stroke-linecap="" />
+                    <!-- Track màu chính để fill động -->
+                    <path id="gauge-arc-rpm" d="M130,245 A150,150 0 1,1 370,245" fill="none" stroke="#a421b5"
+                        stroke-width="16" stroke-linecap="" />
+                    <!-- fill vien 3 mac dinh-->
+                    <path id="gauge-default-rpm" d="M140,240 A140,140 0 1,1 360,240" fill="none" stroke="#0b2e16"
+                        stroke-width="12" stroke-linecap="" />
+                    <!-- default nho phia trong -->
+                    <path id="gauge-default-small" d="M160,200 A100,100 0 1,1 340,200" fill="none" stroke="#2b2928"
+                        stroke-width="5" stroke-linecap="" />
+                    <line id="needle-rpm" x1="250" y1="210" x2="250" y2="100" stroke="#e82676" stroke-width="7"
+                        stroke-linecap="round"
+                        style="transform-origin: 250px 210px; transform: rotate(100deg);  transition: transform 0.4s cubic-bezier(.8,2,.6,1);"
+                        class="z-50" />
+                </svg>
+                <div class="absolute top-[60px] left-[70px] pt-2 w-[110px] text-center">
+                    <p class="font-bold " id="rpm-value" style="font-family: 'Orbitron', monospace;">1000</p>
+                    <p class=" text-sm">X1000</p>
+                    <p class="text-sm">RPM</p>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="absolute bottom-6 right-6 w-[110px] h-[80px] flex flex-col justify-center mx-auto items-center">
+            <div>
+                <p class="text-5xl font-bold">P</p>
+            </div>
+        </div>
+        <div class="absolute bottom-6 left-6">
+            <div class="flex flex-col items-center justify-center relative" style="width: 48px; height: 100px;">
+                <!-- Chữ F (Full) phía trên -->
+                <span
+                    style="position: absolute; top: 0; left: 0; color: #25ff70; font-weight: bold; font-size: 1rem;">F</span>
+
+                <!-- Cột xăng SVG -->
+                <svg width="38" height="90" viewBox="0 0 38 90" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    style="display:block; margin:auto;">
+                    <!-- Viền ngoài -->
+                    <polygon points="10,1 38,1 20,80 10,80" stroke="#aaa" stroke-width="1" fill="none" />
+                    <!-- Mức xăng (fill động, fill mặc định 65%) -->
+                    <polygon id="fuel-bar" points="10,10 35,10 20,80 10,80" fill="#25ffd7" />
+                </svg>
+
+                <!-- Icon bình xăng chính giữa cột -->
+                <div style="position: absolute; left: 45%; bottom: -20%; transform: translate(-50%, -50%);">
+                    <img src="fuel-logo.svg" alt="">
+                </div>
+
+                <!-- Chữ E (Empty) phía dưới -->
+                <span
+                    style="position: absolute; bottom: 1px; left: 0; color: #ff3535; font-weight: bold; font-size: 1rem;">E</span>
+            </div>
+
+        </div>
+        <div class="relative">
+            <svg width="400" height="400" viewBox="0 0 400 400" class="relative">
+                <!-- Track nền -->
+                <path d="M70,330 A150,150 0 1,1 330,330" fill="none" stroke="#222" stroke-width="24"
+                    stroke-linecap="" />
+                <!-- Track màu chính để fill động -->
+                <path id="gauge-arc" d="M70,330 A150,150 0 1,1 330,330" fill="none" stroke="#8a6413" stroke-width="10"
+                    stroke-linecap="" />
+                <!-- fill vien 3 mac dinh-->
+                <path id="gauge-default" d="M80,325 A140,140 0 1,1 320,325" fill="none" stroke="#7a2620"
+                    stroke-width="12" stroke-linecap="" />
+                <!-- default nho phia trong -->
+                <path id="gauge-default-small" d="M140,300 A80,80 0 1,1 270,300" fill="none" stroke="#2b2928"
+                    stroke-width="5" stroke-linecap="" />
+            </svg>
+            <span class="absolute top-[300px] left-[85px] font-bold">0</span>
+            <span class="absolute top-[230px] left-[70px] font-bold">40</span>
+            <span class="absolute top-[150px] left-[100px] font-bold">80</span>
+            <span class="absolute top-[115px] left-[180px] font-bold">120</span>
+            <span class="absolute top-[150px] right-[100px] font-bold">160</span>
+            <span class="absolute top-[230px] right-[70px] font-bold">200</span>
+            <span class="absolute top-[300px] right-[85px] font-bold">240</span>
+        </div>
+
+        <!-- phần kim đồng hồ -->
+        <svg width="400" height="400" viewBox="0 0 400 400" class="absolute">
+            <!-- Kim đơn: đường thẳng với gốc ở trung tâm (200,200) -->
+            <line id="needle" x1="200" y1="200" x2="200" y2="100" stroke="#fff" stroke-width="3" stroke-linecap="round"
+                style="transform-origin: 200px 240px; transform: rotate(-120deg); transition: transform 0.5s ease-out;" />
+            <!-- Thêm điểm tròn ở tâm để kiểm tra -->
+            <!-- <circle cx="200" cy="300" r="3" fill="red" /> -->
+        </svg>
+
+        <div class="min-w-[90px] absolute text-white text-center mt-20 z-50">
+            <p class="text-6xl font-bold" style="font-family: 'Orbitron', monospace;">100</p>
+            <p>Km/h</p>
+        </div>
+        <div>
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#00ff00" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <!-- Phần dây chéo -->
+                <rect x="15" y="4" width="6" height="23" rx="3" transform="rotate(25 18 16)" fill="none" />
+                <!-- Khóa dây -->
+                <rect x="14" y="27" width="8" height="5" rx="2.2" fill="none" />
+                <!-- Đầu dây -->
+                <rect x="16.2" y="32" width="3.6" height="2.5" rx="1.2" fill="none" />
+            </svg>
+        </div>
+    </div>
+
+
+    <script>
+        // Thông số vòng cung
+        const minAngle = -125; // Góc kim tại vạch 0
+        const maxAngle = 125;  // Góc kim tại vạch 240
+        const maxSpeed = 240;  // Tốc độ tối đa
+
+        // Dài cung fill
+        const arc = document.querySelector('path#gauge-arc');
+        let arcLength = arc ? arc.getTotalLength() : 472;
+        console.log(arcLength)
+
+        // Tính góc kim theo tốc độ
+        const speedToAngle = [
+            { speed: 0, angle: -125 },
+            { speed: 40, angle: -90 },
+            { speed: 80, angle: -50 },
+            { speed: 120, angle: 0 },
+            { speed: 160, angle: 50 },
+            { speed: 200, angle: 90 },
+            { speed: 240, angle: 125 }
+        ];
+
+        // Nội suy tuyến tính cho mọi giá trị speed
+        function angleForSpeed(speed) {
+            // Tìm 2 mốc gần nhất
+            let i = 0;
+            while (i < speedToAngle.length - 1 && speed > speedToAngle[i + 1].speed) i++;
+            const left = speedToAngle[i];
+            const right = speedToAngle[i + 1] || left;
+            if (left.speed === right.speed) return left.angle;
+            // Nội suy
+            const t = (speed - left.speed) / (right.speed - left.speed);
+            return left.angle + t * (right.angle - left.angle);
+        }
+        function getColorForSpeed(speed) {
+            // 0: xanh #00ff82, 120: vàng #ffe600, 240: đỏ #ff2a00
+            if (speed <= 120) {
+                // Xanh sang vàng
+                let t = speed / 120;
+                // Nội suy từng kênh màu RGB
+                let r = Math.round(0 + t * (255 - 0));
+                let g = Math.round(255 + t * (230 - 255));
+                let b = Math.round(130 + t * (0 - 130));
+                return `rgb(${r},${g},${b})`;
+            } else {
+                // Vàng sang đỏ
+                let t = (speed - 120) / 120;
+                let r = Math.round(255 + t * (255 - 255));
+                let g = Math.round(230 - t * 230);
+                let b = 0;
+                return `rgb(${r},${g},${b})`;
+            }
+        }
+
+        function arcDashForSpeed(speed) {
+            speed = Math.max(0, Math.min(speed, maxSpeed));
+            return (arcLength * speed / maxSpeed).toFixed(1);
+        }
+        // Hàm cập nhật đồng hồ
+        function setSpeed(speed) {
+            const needle = document.getElementById('needle');
+            if (needle) {
+                needle.style.transform = `rotate(${angleForSpeed(speed)}deg)`;
+            }
+            document.querySelector('.text-6xl').textContent = speed;
+            // Fill vòng cung
+            const gaugeArc = document.querySelector('path#gauge-arc');
+            if (gaugeArc) {
+                gaugeArc.setAttribute('stroke-dasharray', `${arcDashForSpeed(speed)} ${arcLength}`);
+                gaugeArc.setAttribute('stroke', getColorForSpeed(speed));
+            }
+            // Số tốc độ lớn ở giữa
+            document.querySelector('.text-6xl').textContent = speed;
+        }
+
+        // Giả lập giá trị chạy liên tục
+        let speeds = [0, 50, 60, 90, 160, 200, 240];
+        let idx = 0;
+        // setInterval(() => {
+        //     setSpeed(speeds[idx]);
+        //     idx = (idx + 1) % speeds.length;
+        // }, 1000);
+        setSpeed(100);
+
+        function setFuel(percent) {
+            const fuelLevel = [
+                { level: 95, x2: 40 },
+                { level: 90, x2: 36 },
+                { level: 80, x2: 33 },
+                { level: 70, x2: 32 },
+                { level: 60, x2: 29 },
+                { level: 50, x2: 27 },
+                { level: 40, x2: 25 },
+                { level: 20, x2: 20 }
+
+            ];
+            let x2 = 20;
+            for (let i = 0; i < fuelLevel.length; i++) {
+                if (percent >= fuelLevel[i].level) {
+                    x2 = fuelLevel[i].x2;
+                    break;
+                }
+            }
+            let color = "#ff3535"; // mặc định là đỏ
+            if (percent > 80) color = "#25ffd7";      // xanh
+            else if (percent > 50) color = "#fff200"; // vàng chanh
+            else if (percent > 30) color = "#ff9b00"; // cam
+
+            let y = Math.max(0, Math.min(78, 100 - percent));
+            let points = `10,${y} ${x2},${y} 20,80 10,80`;
+            let fuelBar = document.getElementById('fuel-bar');
+            fuelBar.setAttribute('points', points);
+            fuelBar.setAttribute('fill', color);
+        }
+
+        setFuel(76);
+        //rpm
+        // Cấu hình RPM
+        const rpmConfig = {
+            minAngle: -100,    // Góc tối thiểu (0 RPM)
+            maxAngle: 100,     // Góc tối đa (12000 RPM)
+            maxRpm: 12000,     // RPM tối đa
+            needleId: 'needle-rpm', // ID của kim RPM
+            intervals: [0, 2000, 4000, 6000, 9000, 10000, 12000] // Các mốc RPM demo
+        };
+
+        // Hàm tính góc quay dựa trên RPM
+        function calculateRpmAngle(rpm, config) {
+            // Giới hạn RPM trong khoảng hợp lệ
+            const clampedRpm = Math.max(0, Math.min(rpm, config.maxRpm));
+            // Tính toán góc quay (tuyến tính)
+            return config.minAngle + ((clampedRpm / config.maxRpm) * (config.maxAngle - config.minAngle));
+        }
+        function getColorForRPM(rpm) {
+            const maxRPM = 12000;
+            rpm = Math.max(0, Math.min(rpm, maxRPM));
+            let t = rpm / maxRPM;
+
+            // Xanh #00ff82 (0,255,130) sang tím #b700ff (183,0,255)
+            let r = Math.round(0 + t * (183 - 0));   // 0 -> 183
+            let g = Math.round(255 - t * (255 - 0));   // 255 -> 0
+            let b = Math.round(130 + t * (255 - 130)); // 130 -> 255
+
+            return `rgb(${r},${g},${b})`;
+        }
+
+
+        const arc_rpm = document.querySelector('path#gauge-arc-rpm');
+        let arcLengthRPM = arc ? arc.getTotalLength() : 472;
+        console.log("rpm", arcLengthRPM)
+        function arcDashForRPM(rpm) {
+            rpm = Math.max(0, Math.min(rpm, rpmConfig.maxRpm));
+            return (arcLengthRPM * rpm / rpmConfig.maxRpm).toFixed(1);
+        }
+        function updateRpmNeedle(rpm, config) {
+            const needle = document.getElementById(config.needleId);
+            if (!needle) {
+                console.error('Không tìm thấy kim RPM với ID:', config.needleId);
+                return;
+            }
+
+            const angle = calculateRpmAngle(rpm, config);
+            needle.style.transform = `rotate(${angle}deg)`;
+            const gaugeArc = document.querySelector('path#gauge-arc-rpm');
+            if (gaugeArc) {
+                gaugeArc.setAttribute('stroke-dasharray', `${arcDashForRPM(rpm)} ${arcLengthRPM}`);
+                gaugeArc.setAttribute('stroke', getColorForRPM(rpm));
+            }
+            // Số tốc độ lớn ở giữa
+            document.querySelector('#rpm-value').textContent = rpm;
+            return angle;
+        }
+
+        updateRpmNeedle(6000, rpmConfig);
+    </script>
+</body>
+
+</html>

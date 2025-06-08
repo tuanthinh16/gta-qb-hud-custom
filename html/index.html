@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HUD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quasar@2.1.0/dist/quasar.umd.prod.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="">
+    <div id="app" class=" overflow-hidden min-h-screen">
+        <!-- Status HUD Bottom Left -->
+        <div class="fixed bottom-4 left-4 z-50" id="hud-status">
+            <!-- Row 1: Health, Mic, Armor -->
+            <div class="flex items-center space-x-3">
+                <div class="w-36 h-2 bg-gred-700 rounded-full">
+                    <div class="h-full bg-red-500 rounded-full" :style="{ width: health + '%' }"></div>
+                </div>
+                <i class="fas fa-microphone text-white"></i>
+                <div class="w-36 h-2 bg-gray-700 rounded-full">
+                    <div class="h-full bg-blue-500 rounded-full" :style="{ width: armor + '%' }"></div>
+                </div>
+            </div>
+
+            <!-- Row 2: Icons with values -->
+            <div class="flex space-x-6 text-white">
+                <!-- Nước -->
+                <div class="relative w-12 h-12 flex flex-col items-center">
+                    <!-- Vòng tròn progress -->
+                    <div class="relative w-full h-full">
+                        <!-- Viền xám cố định bên trong -->
+                        <svg viewBox="0 0 36 36" class="w-full h-full rotate-[-90deg] absolute">
+                            <path class="text-gray-300" d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3" stroke="currentColor" />
+                        </svg>
+
+                        <!-- Viền ngoài thay đổi theo chỉ số -->
+                        <svg viewBox="0 0 36 36" class="w-full h-full rotate-[-90deg] absolute">
+                            <path :d="circlePath" fill="none" :stroke="thirstColor" stroke-width="3"
+                                stroke-linecap="round" stroke-dasharray="100, 100" :stroke-dashoffset="100 - thirst" />
+                        </svg>
+
+                        <!-- Icon nằm chính giữa -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px"
+                                fill="#9CA3AF"> <!-- Màu xám -->
+                                <path
+                                    d="M508-218q8-1 14-7.5t6-16.5q0-11-8-18t-19-5q-58 8-106.5-27T337-387q-1-9-7.5-15t-15.5-6q-11 0-18.5 8t-5.5 19q11 78 74 126t144 37ZM480-96q-130 0-221-91t-91-221q0-97 74.5-205T480-864q166 150 239 257t73 199q0 130-91 221T480-96Zm0-72q100 0 170-70t70-170q0-68-54-149T480-769Q348-638 294-557t-54 149q0 100 70 170t170 70Zm0-312Z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <p class="text-xs font-semibold">
+                        {{ Math.round(thirst) }}%
+                    </p>
+                </div>
+                <!-- Đồ ăn -->
+                <div class="relative w-12 h-12 flex flex-col items-center">
+                    <!-- Vòng tròn progress -->
+                    <div class="relative w-full h-full">
+                        <!-- Viền xám cố định bên trong -->
+                        <svg viewBox="0 0 36 36" class="w-full h-full rotate-[-90deg] absolute">
+                            <path class="text-gray-300" d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3" stroke="currentColor" />
+                        </svg>
+
+                        <!-- Viền ngoài thay đổi theo chỉ số -->
+                        <svg viewBox="0 0 36 36" class="w-full h-full rotate-[-90deg] absolute">
+                            <path :d="circlePath" fill="none" :stroke="hungerColor" stroke-width="3"
+                                stroke-linecap="round" stroke-dasharray="100, 100" :stroke-dashoffset="100 - hunger" />
+                        </svg>
+
+                        <!-- Icon nằm chính giữa -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px"
+                                fill="#9CA3AF">
+                                <path
+                                    d="M336-240h48v-241q26-4 43-24t17-47v-150.1q0-7.9-5-12.9t-13-5q-8 0-13 5t-5 13.15V-600h-30v-101.85q0-8.15-5-13.15t-13-5q-8 0-13 5t-5 13.15V-600h-30v-101.85q0-8.15-5-13.15t-13-5q-8 0-13 5t-5 12.9V-552q0 27 17 47t43 24v241Zm240 0h48v-246q26-11 43-41.78 17-30.77 17-72.1Q684-650 659.5-685 635-720 600-720t-59.5 35Q516-650 516-599.88q0 41.33 17 72.1Q550-497 576-486v246ZM168-96q-29.7 0-50.85-21.15Q96-138.3 96-168v-624q0-29.7 21.15-50.85Q138.3-864 168-864h624q29.7 0 50.85 21.15Q864-821.7 864-792v624q0 29.7-21.15 50.85Q821.7-96 792-96H168Zm0-72h624v-624H168v624Zm0 0v-624 624Z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <p class="text-xs font-semibold">
+                        {{ Math.round(hunger) }}%
+                    </p>
+                </div>
+                <!-- Oxygen -->
+                <div class="relative w-12 h-12 flex flex-col items-center">
+                    <!-- Vòng tròn progress -->
+                    <div class="relative w-full h-full">
+                        <!-- Viền xám cố định bên trong -->
+                        <svg viewBox="0 0 36 36" class="w-full h-full rotate-[-90deg] absolute">
+                            <path class="text-gray-300" d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3" stroke="currentColor" />
+                        </svg>
+
+                        <!-- Viền ngoài thay đổi theo chỉ số -->
+                        <svg viewBox="0 0 36 36" class="w-full h-full rotate-[-90deg] absolute">
+                            <path :d="circlePath" fill="none" :stroke="oxygenColor" stroke-width="3"
+                                stroke-linecap="round" stroke-dasharray="100, 100" :stroke-dashoffset="100 - oxygen" />
+                        </svg>
+
+                        <!-- Icon nằm chính giữa -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px"
+                                fill="#9CA3AF">
+                                <path
+                                    d="M204-144q-45 0-76.5-31.5T96-252v-187l121-277q11-24 33.74-38 22.73-14 49.26-14 35 0 59.5 25.47Q384-717.05 384-681v79h-72v-79q0-5.45-4.5-9.23Q303-694 297-694q-5 0-8.5 1.5T283-686L168-424v172q0 15.3 10.35 25.65Q188.7-216 204-216h144q14 0 25-10.35T384-252v-84h72v84q0 45-31.5 76.5T348-144H204Zm552 0H612q-45 0-76.5-31.5T504-252v-84h72v84q0 15.3 10.35 25.65Q596.7-216 612-216h144q14 0 25-10.35T792-252v-172L676-686q-2-5-5.69-6.5-3.69-1.5-8.31-1.5-6 0-10 3.77-4 3.78-4 9.23v79h-72v-79q0-35 24.23-61t58.85-26q26.92 0 49.42 14t33.5 38l122 277v187q0 45-31.5 76.5T756-144ZM336-458Zm288 0Zm-144-43-93 93-51-50 108-108v-298h72v297l108 109-50 50-94-93Z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <p class="text-xs font-semibold">
+                        {{ Math.round(oxygen) }}%
+                    </p>
+                </div>
+                <!-- Stress -->
+                <div class="relative w-12 h-12 flex flex-col items-center">
+                    <!-- Vòng tròn progress -->
+                    <div class="relative w-full h-full">
+                        <!-- Viền xám cố định bên trong -->
+                        <svg viewBox="0 0 36 36" class="w-full h-full rotate-[-90deg] absolute">
+                            <path class="text-gray-300" d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3" stroke="currentColor" />
+                        </svg>
+
+                        <!-- Viền ngoài thay đổi theo chỉ số -->
+                        <svg viewBox="0 0 36 36" class="w-full h-full rotate-[-90deg] absolute">
+                            <path :d="circlePath" fill="none" :stroke="stressColor" stroke-width="3"
+                                stroke-linecap="round" stroke-dasharray="100, 100" :stroke-dashoffset="100 - stress" />
+                        </svg>
+
+                        <!-- Icon nằm chính giữa -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px"
+                                fill="#9CA3AF">
+                                <path
+                                    d="M395-144q-47 0-80-31t-38-77q-57-6-95-48t-38-100.02q0-19.98 4.5-41.48Q153-463 164-480q-10-17.07-15-36.03-5-18.97-5-39.31 0-56.39 37-97.52Q218-694 275-702q2-48 37.04-81t82.99-33q23.97 0 45.97 9t39.46 26q16.54-17 37.87-26t45.44-9Q612-816 647-783q35 33 37 81 57 7 94.5 48.72T816-555q0 20.94-5.5 39.97Q805-496 795-479q12 20 16.5 40t4.5 39.48q0 57.52-38.5 100.02Q739-257 682-252q-5 46-38 77t-80.27 31q-23.17 0-44.95-8.5T480-178q-17 16-39.03 25T395-144Zm121-551.3v431.6q0 19.7 13.92 34.2Q543.84-215 564-215q20 0 33-14t14-34q-19-8-35.07-20.33Q559.86-295.65 547-313q-9-12.48-6.5-26.74Q543-354 555.5-363q12.5-9 26.98-6.76Q596.95-367.53 606-355q10.55 15.03 26.86 23.02 16.3 7.98 35.49 7.98Q700-324 722-346t22-54q0-7-1-13t-3-12q-15.9 9-34.13 13.5Q687.64-407 668-407q-15.3 0-25.65-10.29Q632-427.58 632-442.79t10.35-25.71Q652.7-479 668-479q32 0 54-22t22-53.53q0-31.52-22-53.5Q700-630 666.25-631 655-614 639.5-601T604-581q-14 5-27.5-1.26-13.5-6.27-18.5-20.58-5-14.32 1.5-27.74Q566-644 580.45-649 594-654 603-666.39t9-28.59q0-20.02-13.92-34.52Q584.16-744 564-744q-20.16 0-34.08 14.5Q516-715 516-695.3ZM444-264v-431.31q0-19.69-14.5-34.19Q415-744 394.89-744q-20.12 0-34 14.28Q347-715.44 347-694.76q0 15.76 9 28.26 9 12.5 22.55 17.5 14.45 5 20.95 18.37Q406-617.26 401-603q-5 14-18.5 20.5T355-581q-20-7-35.5-20t-26.76-30Q260-630 238-608t-22 53.02Q216-523 238-501q22 22 54 22 15.3 0 25.65 10.29Q328-458.42 328-443.21t-10.35 25.71Q307.3-407 292-407q-19.6 0-37.8-5-18.2-5-34.2-14-2 6-3 12.67-1 6.66-1 13.33 0 32 22 54t53.65 22q19.19 0 35.49-7.98Q343.45-339.97 354-355q9.29-13.26 24.14-15.63Q393-373 405-364t14.5 24q2.5 15-6.25 27.3Q401-296 384.5-283T348-262q1 20 14 33t32.71 13q20.7 0 35-13.92Q444-243.84 444-264Zm36-215Z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <p class="text-xs font-semibold ">
+                        {{ Math.round(stress) }}%
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40" v-if="inVehicle">
+            <div class=" rounded-t-[2rem] overflow-hidden shadow-2xl  flex items-center justify-center" style="
+                width: 650px; 
+                height: 300px;             
+                border-radius: 1.2rem; 
+                background-color: rgba(183, 209, 231, 0.13);
+                color: white;
+                position: relative;
+            ">
+                <div class="absolute top-4 left-6">
+                    <p class="text-3xl text-white" style="font-family: Montserrat,monospace;">{{vehicleName}}</p>
+                </div>
+                <div class="absolute top-3 right-2">
+                    <div class="relative">
+                        <svg width="200" height="200" viewBox="0 0 400 400" class="relative">
+                            <!-- Track nền -->
+                            <path d="M120,280 A160,160 0 1,1 350,280" fill="none" stroke="#222" stroke-width="24"
+                                stroke-linecap="" />
+                            <!-- Track màu chính để fill động -->
+                            <path ref="gaugeArcRpm" id="gauge-arc-rpm" d="M130,275 A150,150 0 1,1 350,275" fill="none"
+                                :style="{ 
+                                stroke: getColorForRPM(rpm),
+                                strokeDasharray: `${arcDashForRPM} +''+ 627.9769287109375`
+                                }" stroke-width="16" stroke-linecap="" />
+                            <!-- fill vien 3 mac dinh-->
+                            <path id="gauge-default-rpm" d="M140,270 A140,140 0 1,1 340,270" fill="none"
+                                stroke="#189979" stroke-width="12" stroke-linecap="" />
+                            <!-- default nho phia trong -->
+                            <path id="gauge-default-small" d="M150,220 A100,100 0 1,1 340,220" fill="none"
+                                stroke="#2b2928" stroke-width="5" stroke-linecap="" />
+                            <!-- kim rpm -->
+                            <line id="needle-rpm" x1="250" y1="210" x2="250" y2="100" stroke="#e82676" stroke-width="7"
+                                stroke-linecap="round" :style="{
+                                    transformOrigin: '250px 210px',
+                                    transform: `rotate(${needleRpmAngle}deg)`,
+                                    transition: 'transform 0.3s cubic-bezier(.8,2,.6,1)'
+                                }" class="z-50" />
+
+                        </svg>
+                        <div class="absolute top-[60px] left-[70px] pt-2 w-[110px] text-center">
+                            <p class="font-bold " id="rpm-value" style="font-family: 'Orbitron', monospace;">{{ rpm }}
+                            </p>
+                            <!-- <p class=" text-sm">X1000</p> -->
+                            <p class="text-sm">RPM</p>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div
+                    class="absolute bottom-6 right-6 w-[110px] h-[80px] flex flex-col justify-center mx-auto items-center">
+                    <div class="relative">
+                        <!-- Viền neon xung quanh -->
+                        <div class="gear-border"></div>
+
+                        <!-- Số gear với transition -->
+                        <transition name="gear-change" mode="out-in">
+                            <p :key="gear" class="text-5xl font-bold gear-digit" :style="{
+                                    fontFamily: 'Orbitron, monospace',
+                                    color: gearColor,
+                                    textShadow: `0 0 10px ${gearColor}80`
+                                }">
+                                {{ gear }}
+                            </p>
+                        </transition>
+                    </div>
+                </div>
+                <!-- fuel  -->
+                <div class="absolute bottom-6 left-6">
+                    <div class="flex flex-col items-center justify-center relative" style="width: 48px; height: 100px;">
+                        <!-- Chữ F (Full) phía trên -->
+                        <span
+                            style="position: absolute; top: 0; left: 0; color: #25ff70; font-weight: bold; font-size: 1rem;">F</span>
+
+                        <!-- Cột xăng SVG -->
+                        <svg width="38" height="90" viewBox="0 0 38 90" fill="none" xmlns="http://www.w3.org/2000/svg"
+                            style="display:block; margin:auto;">
+                            <!-- Viền ngoài -->
+                            <polygon points="10,1 38,1 20,80 10,80" stroke="#aaa" stroke-width="1" fill="none" />
+                            <!-- Mức xăng (fill động, fill mặc định 65%) -->
+                            <polygon id="fuel-bar" :points="fuelPointStyle" :fill="fuelColorStyle" />
+                        </svg>
+
+                        <!-- Icon bình xăng chính giữa cột -->
+                        <div style="position: absolute; left: 45%; bottom: -20%; transform: translate(-50%, -50%);">
+                            <img src="fuel-logo.svg" alt="">
+                        </div>
+
+                        <!-- Chữ E (Empty) phía dưới -->
+                        <span
+                            style="position: absolute; bottom: 1px; left: 0; color: #ff3535; font-weight: bold; font-size: 1rem;">E</span>
+                    </div>
+
+                </div>
+                <div class="relative">
+                    <svg width="400" height="400" viewBox="0 0 400 400" class="relative">
+                        <!-- Track nền -->
+                        <path d="M70,330 A150,150 0 1,1 330,330" fill="none" stroke="#222" stroke-width="24"
+                            stroke-linecap="" />
+                        <!-- Track màu chính để fill động -->
+                        <path ref="gaugeArcSpeed" id="gauge-arc" d="M70,330 A150,150 0 1,1 330,330" fill="none"
+                            :stroke="colorSpeed" :stroke-dasharray="arcDashForSpeed + ' ' + 627.9769287109375"
+                            stroke-width="10" stroke-linecap="" />
+                        <!-- fill vien 3 mac dinh-->
+                        <path id="gauge-default" d="M80,325 A140,140 0 1,1 320,325" fill="none" stroke="#7a2620"
+                            stroke-width="12" stroke-linecap="" />
+                        <!-- default nho phia trong -->
+                        <path id="gauge-default-small" d="M140,300 A80,80 0 1,1 270,300" fill="none" stroke="#2b2928"
+                            stroke-width="5" stroke-linecap="" />
+                    </svg>
+                    <span class="value-speed absolute top-[300px] left-[85px] font-bold">0</span>
+                    <span class="value-speed  absolute top-[230px] left-[70px] font-bold">40</span>
+                    <span class="value-speed absolute top-[150px] left-[100px] font-bold">80</span>
+                    <span class="value-speed absolute top-[115px] left-[180px] font-bold">120</span>
+                    <span class="value-speed absolute top-[150px] right-[100px] font-bold">160</span>
+                    <span class="value-speed absolute top-[230px] right-[70px] font-bold">200</span>
+                    <span class="value-speed absolute top-[300px] right-[85px] font-bold">240</span>
+                </div>
+
+                <!-- phần kim đồng hồ -->
+                <svg width="400" height="400" viewBox="0 0 400 400" class="absolute">
+                    <!-- Kim đơn: đường thẳng với gốc ở trung tâm (200,200) -->
+                    <line id="needle" x1="200" y1="200" x2="200" y2="100" stroke="#fff" stroke-width="3"
+                        stroke-linecap="round" :style="{
+                                    transformOrigin: '200px 240px',
+                                    transform: `rotate(${needleSpeedAngle}deg)`,
+                                    transition: 'transform 0.3s cubic-bezier(.8,2,.6,1)'
+                                }" />
+                    <!-- Thêm điểm tròn ở tâm để kiểm tra -->
+                    <!-- <circle cx="200" cy="300" r="3" fill="red" /> -->
+                </svg>
+
+                <div class="min-w-[90px] absolute text-white text-center mt-20 z-50">
+                    <p class="text-6xl font-bold" style="font-family: 'Orbitron', monospace;">{{ speed }}</p>
+                    <p>Km/h</p>
+                </div>
+                <div class="absolute bottom-3 flex gap-2 ">
+                    <!-- xi nhan trái  -->
+                    <svg width="30" height="30" viewBox="0 0 60 60" fill="none">
+                        <path
+                            d="M50 22C50 20.8954 49.1046 20 48 20H24V14C24 12.6193 22.3807 11.873 21.4142 12.8284L6.3431 27.8995C5.5621 28.6805 5.5621 29.9468 6.3431 30.7278L21.4142 45.7989C22.3807 46.7643 24 46.018 24 44.6373V39H48C49.1046 39 50 38.1046 50 37V22Z"
+                            fill="none" stroke="#00ff82" stroke-width="2" />
+                    </svg>
+
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" :stroke="seabeltColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <!-- Phần dây chéo -->
+                        <rect x="15" y="4" width="6" height="23" rx="3" transform="rotate(25 18 16)" fill="none" />
+                        <!-- Khóa dây -->
+                        <rect x="14" y="27" width="8" height="5" rx="2.2" fill="none" />
+                        <!-- Đầu dây -->
+                        <rect x="16.2" y="32" width="3.6" height="2.5" rx="1.2" fill="none" />
+                    </svg>
+                    <!-- xi nhan phải -->
+                    <svg width="30" height="30" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M10 22C10 20.8954 10.8954 20 12 20H36V14C36 12.6193 37.6193 11.873 38.5858 12.8284L53.6569 27.8995C54.4379 28.6805 54.4379 29.9468 53.6569 30.7278L38.5858 45.7989C37.6193 46.7643 36 46.018 36 44.6373V39H12C10.8954 39 10 38.1046 10 37V22Z"
+                            fill="none" stroke="#00ff82" stroke-width="2" />
+                    </svg>
+
+
+                </div>
+            </div>
+        </div>
+        <!-- Thêm vào trong thẻ <div id="app"> -->
+        <div class="fixed top-5 right-5 z-50 flex items-center gap-2" id="money-status">
+            <!-- Tiền mặt -->
+            <div class="bg-gray-300 bg-opacity-70 rounded-md px-3 py-1 flex items-center gap-2" v-if="showCash">
+                <i class="fas fa-wallet text-green-400 mr-2"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                    fill="#666666">
+                    <path
+                        d="M444-200h70v-50q50-9 86-39t36-89q0-42-24-77t-96-61q-60-20-83-35t-23-41q0-26 18.5-41t53.5-15q32 0 50 15.5t26 38.5l64-26q-11-35-40.5-61T516-710v-50h-70v50q-50 11-78 44t-28 74q0 47 27.5 76t86.5 50q63 23 87.5 41t24.5 47q0 33-23.5 48.5T486-314q-33 0-58.5-20.5T390-396l-66 26q14 48 43.5 77.5T444-252v52Zm36 120q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+                </svg>
+                <span class="text-white font-digital">{{cash }}</span>
+            </div>
+
+            <!-- Tiền ngân hàng -->
+            <div class="bg-gray-300 bg-opacity-70 rounded-md px-3 py-1 flex items-center gap-2" v-if="showBank">
+                <i class="fas fa-university text-blue-400 mr-2"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                    fill="#666666">
+                    <path
+                        d="M880-720v480q0 33-23.5 56.5T800-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720Zm-720 80h640v-80H160v80Zm0 160v240h640v-240H160Zm0 240v-480 480Z" />
+                </svg>
+                <span class="text-white font-digital">{{ bank }}</span>
+            </div>
+        </div>
+
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
